@@ -1,0 +1,44 @@
+mkdir bin
+mkdir etc
+mkdir home
+mkdir dev
+mkdir test_del
+ls
+rm test_del
+ls
+mkdir test
+cd test
+creat jerry -rw
+open jerry -rw
+write jerry ./TestFiles/1.txt 800
+seek jerry 500 0
+read jerry -o ./TestFiles/1_out.txt 500
+close jerry
+cd ..
+mkdir texts
+mkdir reports
+mkdir photos
+ls
+cd texts
+creat rea -rw
+open rea -rw
+write rea ./TestFiles/readme.txt 1018
+seek rea 0 0
+read rea -o ./TestFiles/2_out.txt 1018
+close rea
+cd ..
+cd reports
+creat rep -rw
+open rep -rw
+write rep ./TestFiles/1.pdf 276258
+seek rep 0 0
+read rep -o ./TestFiles/1_out.pdf 276258
+close rep
+cd ..
+cd photos
+creat cat -rw
+open cat -rw
+write cat ./TestFiles/1.jpg 26258
+seek cat 0 0
+read cat -o ./TestFiles/1_out.jpg 26258
+close cat
