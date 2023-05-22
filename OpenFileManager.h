@@ -3,109 +3,70 @@
 
 #include "File.h"
 
-
-/* Forward Declaration */
-class OpenFileTable;
-class InodeTable;
-
-
 /*
- * 打开文件管理类(OpenFileManager)负责
- * 内核中对打开文件机构的管理，为进程
- * 打开文件建立内核数据结构之间的勾连
- * 关系。
- * 勾连关系指进程u区中打开文件描述符指向
- * 打开文件表中的File打开文件控制结构，
- * 以及从File结构指向文件对应的内存Inode。
- */
-class OpenFileTable
-{
+* OpenFileTable系统打开文件表
+* 管理内核系统对打开文件机构的管理，为进程打开文件建立内核数据结构之间的勾连关系
+*/
+class OpenFileTable {
+	/*=== Static Consts ===*/
 public:
-	/* static consts */
-	//static const int NINODE	= 100;	/* 内存Inode的数量 */
-	static const int NFILE = 100;	/* 打开文件控制块File结构的数量 */
+	static const int FILE_SIZE = 100;
 
-	/* Functions */
+	/*=== Functions ===*/
 public:
-	/* Constructors */
 	OpenFileTable();
-	/* Destructors */
 	~OpenFileTable();
 
-	// /* 
-	 // * @comment 根据用户系统调用提供的文件描述符参数fd，
-	 // * 找到对应的打开文件控制块File结构
-	 // */
-	// File* GetF(int fd);
-	/*
-	 * @comment 在系统打开文件表中分配一个空闲的File结构
-	 */
+	/* 在系统代开文件表中分配一个空闲的File结构 */
 	File* FAlloc();
-	/*
-	 * @comment 对打开文件控制块File结构的引用计数f_count减1，
-	 * 若引用计数f_count为0，则释放File结构。
-	 */
-	void CloseF(File* pFile);
+
+	/* 对打开文件控制块File结构的引用计数f_count减1，减为0时释放File */
+	void CloseF(File* fp);
 
 	void Format();
 
-	/* Members */
+	/*=== Members ===*/
 public:
-	File m_File[NFILE];			/* 系统打开文件表，为所有进程共享，进程打开文件描述符表
-								中包含指向打开文件表中对应File结构的指针。*/
+	File m_File[FILE_SIZE]; // 系统打开文件表
 };
+
+
 
 /*
- * 内存Inode表(class InodeTable)
- * 负责内存Inode的分配和释放。
- */
-class InodeTable
-{
-	/* static consts */
+* 内存Inode表
+*/
+class InodeTable {
+	/*=== Static Consts ===*/
 public:
-	static const int NINODE = 100;	/* 内存Inode的数量 */
+	static const int INODE_SIZE = 100;
 
-	/* Functions */
+	/*=== Functions ===*/
 public:
-	/* Constructors */
 	InodeTable();
-	/* Destructors */
 	~InodeTable();
 
-	/*
-	 * @comment 根据指定设备号dev，外存Inode编号获取对应
-	 * Inode。如果该Inode已经在内存中，对其上锁并返回该内存Inode，
-	 * 如果不在内存中，则将其读入内存后上锁并返回该内存Inode
-	 */
-	Inode* IGet(int inumber);
-	/*
-	 * @comment 减少该内存Inode的引用计数，如果此Inode已经没有目录项指向它，
-	 * 且无进程引用该Inode，则释放此文件占用的磁盘块。
-	 */
-	void IPut(Inode* pNode);
+	/* 检查inumber的外存Inode是否有相应的内存Inode，若有返回索引 */
+	int IsLoaded(const int& inumber);
 
-	/*
-	 * @comment 将所有被修改过的内存Inode更新到对应外存Inode中
-	 */
-	void UpdateInodeTable();
-
-	/*
-	 * @comment 检查设备dev上编号为inumber的外存inode是否有内存拷贝，
-	 * 如果有则返回该内存Inode在内存Inode表中的索引
-	 */
-	int IsLoaded(int inumber);
-	/*
-	 * @comment 在内存Inode表中寻找一个空闲的内存Inode
-	 */
+	/* 在内存Inode表中寻找一i个空闲的内存Inode */
 	Inode* GetFreeInode();
 
+	/* 根据inumber从外存Inode中获取相应的Inode并读入内存 */
+	Inode* IGet(const int& inumber);
+
+	/* 减少该内存Inode的引用次数，如果此Inode无目录项指向它且五金城引用，则释放文件占用的磁盘块 */
+	void IPut(Inode* ip);
+
+	/* 将所有修改过的内存Inode更新到对应的外存Inode中 */
+	void UpdateInodeTable();
+
+	
 	void Format();
 
-	/* Members */
+	/*=== Members ===*/
 public:
-	Inode m_Inode[NINODE];		/* 内存Inode数组，每个打开文件都会占用一个内存Inode */
-
-	FileSystem* m_FileSystem;	/* 对全局对象g_FileSystem的引用 */
+	Inode m_Inode[INODE_SIZE]; // 内存Inode数组
+	FileSystem* m_FileSystem; // 对应全局globalFileSystem
 };
 
-#endif // !OPENFILEMANAGER_H
+#endif

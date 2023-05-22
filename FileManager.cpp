@@ -329,9 +329,9 @@ void FileManager::WriteDir(Inode* pINode)
     u.u_dent.m_ino = pINode->i_number;
 
     /* 设置目录项中pathname分量部分 */
-    memcpy(u.u_dent.name, u.u_dbuf, DirectoryEntry::DIRSIZ);
+    memcpy(u.u_dent.name, u.u_dbuf, DirectoryEntry::dir_name_size);
 
-    u.u_IOParam.m_Count = DirectoryEntry::DIRSIZ + 4;
+    u.u_IOParam.m_Count = DirectoryEntry::dir_name_size + 4;
     u.u_IOParam.m_Base = (unsigned char*)&u.u_dent;
 
     /* 将目录项写入父目录文件 */
@@ -374,9 +374,9 @@ void FileManager::UnLink()
     }
 
     /* 写入清零后的目录项 */
-    u.u_IOParam.m_Offset -= (DirectoryEntry::DIRSIZ + 4);
+    u.u_IOParam.m_Offset -= (DirectoryEntry::dir_name_size + 4);
     u.u_IOParam.m_Base = (unsigned char*)&u.u_dent;
-    u.u_IOParam.m_Count = DirectoryEntry::DIRSIZ + 4;
+    u.u_IOParam.m_Count = DirectoryEntry::dir_name_size + 4;
 
     u.u_dent.m_ino = 0;
     pDeleteINode->WriteI();

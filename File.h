@@ -6,95 +6,78 @@
 using namespace std;
 
 /*
- * 打开文件控制块File类。
- * 该结构记录了进程打开文件
- * 的读、写请求类型，文件读写位置等等。
- */
-class File
-{
+* File类
+* 该结构记录打开文件的读、写请求类型，文件读写位置
+*/
+class File {
+	/*=== Static Consts ===*/
 public:
-	/* Enumerate */
-	enum FileFlags
-	{
-		FREAD = 0x1,			/* 读请求类型 */
-		FWRITE = 0x2			/* 写请求类型 */
+	static const int f_count_init = 0;
+	static const int f_flag_init = 0;
+	static const int f_offset_init = 0;
+
+	/*=== Enums ===*/
+public:
+	enum FileFlags {
+		FREAD = 0x1, // 读请求
+		FWRITE = 0x2 //写请求
 	};
 
-	/* Functions */
+	/*=== Functions ===*/
 public:
-	/* Constructors */
 	File();
-	/* Destructors */
 	~File();
 
-
-	/* Member */
-	unsigned int f_flag;		/* 对打开文件的读、写操作要求 */
-	int		f_count;			/* 当前引用该文件控制块的进程数量 */
-	Inode* f_inode;			/* 指向打开文件的内存Inode指针 */
-	int		f_offset;			/* 文件读写位置指针 */
+	/*=== Members ===*/
+public:
+	unsigned int f_flag; // 对打开文件的读、写操作要求
+	int f_count; // 当前引用该文件控制块的进程数
+	Inode* f_inode; // 指向打开文件的内存Inode指针
+	int f_offset; // 文件读写位置指针
 };
 
 
-/*
- * 进程打开文件描述符表(OpenFiles)的定义
- * 进程的u结构中包含OpenFiles类的一个对象，
- * 维护了当前进程的所有打开文件。
- */
-class OpenFiles
-{
-	/* static members */
-public:
-	static const int NOFILES = 100;	/* 进程允许打开的最大文件数 */
 
-	/* Functions */
+/*
+* OpenFiles类
+* 进程打开文件描述符表
+* 进程的u结构中包含了OpenFiles类的一个对象，维护当前进程的所有打开的文件
+*/
+class OpenFiles {
+	/*=== Static Consts ===*/
 public:
-	/* Constructors */
+	static const int OPEN_FILES_NUM = 100; // 进程允许的最大文件数
+
+	/*=== Functions ===*/
+public:
 	OpenFiles();
-	/* Destructors */
 	~OpenFiles();
 
-	/*
-	 * @comment 进程请求打开文件时，在打开文件描述符表中分配一个空闲表项
-	 */
+	/* 在打开文件描述符表中分配一个空闲表项 */
 	int AllocFreeSlot();
+	/* 根据fd找到对应的打开文件控制块File结构 */
+	File* GetF(const int& fd);
+	/* 为已分配到空闲描述符fd和已分配的打开文件表中空闲File对象建立勾连关系 */
+	void SetF(const int& fd, File* fp);
 
-
-	/*
-	 * @comment 根据用户系统调用提供的文件描述符参数fd，
-	 * 找到对应的打开文件控制块File结构
-	 */
-	File* GetF(int fd);
-	/*
-	 * @comment 为已分配到的空闲描述符fd和已分配的打开文件表中
-	 * 空闲File对象建立勾连关系
-	 */
-	void SetF(int fd, File* pFile);
-
-	/* Members */
+	/*=== Members ===*/
 private:
-	File* ProcessOpenFileTable[NOFILES];		/* File对象的指针数组，指向系统打开文件表中的File对象 */
+	File* ProcessOpenFileTable[OPEN_FILES_NUM];
 };
 
-/*
- * 文件I/O的参数类
- * 对文件读、写时需用到的读、写偏移量、
- * 字节数以及目标区域首地址参数。
- */
-class IOParameter
-{
-	/* Functions */
+
+
+class IOParameter {
+	/*=== Functions ===*/
 public:
-	/* Constructors */
 	IOParameter();
-	/* Destructors */
 	~IOParameter();
 
-	/* Members */
+	/*=== Members ===*/
 public:
-	unsigned char* m_Base;	/* 当前读、写用户目标区域的首地址 */
-	int m_Offset;	/* 当前读、写文件的字节偏移量 */
-	int m_Count;	/* 当前还剩余的读、写字节数量 */
+	unsigned char* m_Base; // 当前读、写用户目标区域的首地址
+	int m_Offset; // 当前读、写文件的字节偏移量
+	int m_Count; // 当前还剩余的读、写字节数量
 };
 
 #endif

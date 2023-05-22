@@ -168,6 +168,7 @@ void BufferManager::Bclear(Buf* bp) {
 }
 
 void BufferManager::Bflush() {
+
 	Buf* bp = NULL;
 	for (int i = 0; i < buf_num; i++) {
 		bp = &m_Buf[i];

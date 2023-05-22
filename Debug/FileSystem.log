@@ -1,2 +1,5 @@
-﻿  Inode.cpp
+﻿  FileManager.cpp
+  FileSystem.cpp
+  User.cpp
+  正在生成代码...
   FileSystem.vcxproj -> D:\WorkSpace\Complusory\OS\BigHw\FileSystem\Debug\FileSystem.exe

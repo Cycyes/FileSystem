@@ -250,7 +250,7 @@ bool User::checkPathName(string path) {
     for (unsigned int p = 0, q = 0; p < u_dirp.length(); p = q + 1) {
         q = u_dirp.find('/', p);
         q = min(q, (unsigned int)u_dirp.length());
-        if (q - p > DirectoryEntry::DIRSIZ) {
+        if (q - p > DirectoryEntry::dir_name_size) {
             cout << "文件路径长度过大！ \n";
             return false;
         }

@@ -52,7 +52,7 @@ void Command::executeCommand(const vector<string>& cmdList) {
 		globalOpenFileTable.Format();
 		globalINodeTable.Format();
 		globalBufferManager.Bformat();
-		globalFileSystem.FormatFileSystem();
+		globalFileSystem.Format();
 		exit(0);
 	}
 	else if (cmd == "autotest") {

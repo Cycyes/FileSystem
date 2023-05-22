@@ -94,7 +94,7 @@ public:
 	int Bmap(const int& lbn);
 	void ReadI();
 	void WriteI();
-	void IUpdate(const int& time);
+	void IUpdate();
 	void ITrunc();
 	void ICopy(Buf* bp, const int& inumber);
 	void Clean();

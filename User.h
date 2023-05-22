@@ -77,7 +77,7 @@ public:
 	Inode* u_pdir;		/* 指向父目录的Inode指针 */
 
 	DirectoryEntry u_dent;					/* 当前目录的目录项 */
-	char u_dbuf[DirectoryEntry::DIRSIZ];	/* 当前路径分量，长度应当为 DirectoryEntry::DIRSIZ */
+	char u_dbuf[DirectoryEntry::dir_name_size];	/* 当前路径分量，长度应当为 DirectoryEntry::DIRSIZ */
 	string u_curdir;						/* 当前工作目录完整路径 */
 
 	ErrorCode u_error;			/* 存放错误码 */

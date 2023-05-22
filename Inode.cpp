@@ -252,13 +252,13 @@ void Inode::WriteI() {
 	}
 }
 
-void Inode::IUpdate(const int& time) {
+void Inode::IUpdate() {
 
 	BufferManager& bufferManager = globalBufferManager;
 
 	if (this->checkUPD()) {
 		/* 将DiskInode读取到缓冲区 */
-		Buf* bp = bufferManager.Bread(FileSystem::INODE_ZONE_START_SECTOR + this->i_number / FileSystem::INODE_NUMBER_PER_SECTOR);
+		Buf* bp = bufferManager.Bread(FileSystem::inode_offset + this->i_number / FileSystem::inode_num_per_block);
 
 		/* 将内存Inode的信息复制到diskInode中 */
 		DiskInode diskInode;
@@ -270,7 +270,7 @@ void Inode::IUpdate(const int& time) {
 		}
 
 		/* 用diskInode覆盖缓存中的外存Inode */
-		memcpy((unsigned char*)bp->b_addr + (this->i_number % FileSystem::INODE_NUMBER_PER_SECTOR) * sizeof(DiskInode), &diskInode, sizeof(DiskInode));
+		memcpy((unsigned char*)bp->b_addr + (this->i_number % FileSystem::inode_num_per_block) * sizeof(DiskInode), &diskInode, sizeof(DiskInode));
 
 		/* 将缓存写回磁盘 */
 		bufferManager.Bwrite(bp);
@@ -322,22 +322,19 @@ void Inode::ITrunc() {
 }
 
 void Inode::ICopy(Buf* bp, const int& inumber) {
-	/* 取外存Inode节点到diskInode */
-	DiskInode& diskInode = *(DiskInode*)(bp->b_addr + (inumber % FileSystem::INODE_NUMBER_PER_SECTOR) * sizeof(DiskInode));
+
+	/* 取外存Inode节点到diskInode临时变量 */
+	DiskInode& diskInode = *(DiskInode*)(bp->b_addr + (inumber % FileSystem::inode_num_per_block) * sizeof(DiskInode));
 
 	/* 将diskInode复制到内存Inode节点 */
 	this->i_mode = diskInode.d_mode;
 	this->i_nlink = diskInode.d_nlink;
 	this->i_size = diskInode.d_size;
-	/*
-	for (int i = 0; i < HUGE_FILE_INDEX; i++) {
-		this->i_addr[i] = diskInode.d_addr[i];
-	}
-	*/
 	memcpy(this->i_addr, diskInode.d_addr, sizeof(i_addr));
 }
 
 void Inode::Clean() {
+
 	this->i_mode = i_mode_init;
 	this->i_nlink = i_nlink_init;
 	this->i_size = i_size_init;

@@ -5,4 +5,6 @@
 #define ERROR_PATH_EMPTY -2
 #define ERROR_NEW        -3
 
+#define NOT_FOUND -1
+
 #endif
